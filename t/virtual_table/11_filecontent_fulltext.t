@@ -5,10 +5,15 @@ BEGIN {
 	$^W = 1;
 }
 
-use t::lib::Test qw/connect_ok $sqlite_call/;
+use t::lib::Test qw/connect_ok $sqlite_call requires_sqlite/;
 use Test::More;
+
+BEGIN { requires_sqlite('3.7.12') }
+
 use Test::NoWarnings;
 use FindBin;
+
+plan skip_all => "\$FindBin::Bin points to a nonexistent path for some reason: $FindBin::Bin" if !-d $FindBin::Bin;
 
 my $dbfile = "tmp.sqlite";
 
@@ -40,7 +45,7 @@ my $distrib_dir = "$FindBin::Bin/../..";
 open my $fh, "<", "$distrib_dir/MANIFEST" or die "open $distrib_dir/MANIFEST: $!";
 my @files = <$fh>;
 close $fh;
-chomp foreach @files;
+s/(\r\n|\r|\n)$// foreach @files;
 my @perl_files = grep {/\.(pl|pm|pod)$/} @files;
 
 # open database

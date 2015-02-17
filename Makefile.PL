@@ -5,6 +5,10 @@ use ExtUtils::MakeMaker;
 use Config;
 use File::Spec;
 
+sub DEVELOPER_ONLY () {
+	return -d '.git' ? 1 : 0;
+}
+
 # Some dependencies need to be more aggressive on Windows
 sub WINLIKE () {
 	return 1 if $^O eq 'MSWin32';
@@ -224,8 +228,15 @@ my @CC_DEFINE = (
 	'-DSQLITE_ENABLE_STAT4',            # for sqlite >= 3.8.3.1
 	'-DNDEBUG=1',
 );
+
+if (DEVELOPER_ONLY) {
+	# for sqlite >= 3.8.8
+	push @CC_DEFINE, '-DSQLITE_ENABLE_API_ARMOR';
+}
+
 if ( $^O eq 'cygwin') {
 	push @CC_DEFINE, '-DSQLITE_TEMP_STORE=2';
+	push @CC_DEFINE, '-DTHREADSAFE=0';
 }
 if ( $Config{d_usleep} || $Config{osname} =~ m/linux/ ) {
 	push @CC_DEFINE, '-DHAVE_USLEEP=1';
@@ -315,7 +326,7 @@ WriteMakefile(
 	# this change broke a test under some environment, and thus, may
 	# break other applications eventually. I'm not sure if this is
 	# worth the trouble.
-	OPTIMIZE => $Config{optimize} . ($^O eq 'solaris' && !$Config{gccversion} ? "" : " -O2"),
+	# OPTIMIZE => $Config{optimize} . ($^O eq 'solaris' && !$Config{gccversion} ? "" : " -O2"),
 	OPTIONAL( '6.48',
 		MIN_PERL_VERSION => '5.006',
 	),

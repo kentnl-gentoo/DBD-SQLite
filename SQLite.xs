@@ -12,6 +12,24 @@ BOOT:
     sv_setpv(get_sv("DBD::SQLite::sqlite_version",        TRUE|GV_ADDMULTI), SQLITE_VERSION);
     sv_setiv(get_sv("DBD::SQLite::sqlite_version_number", TRUE|GV_ADDMULTI), SQLITE_VERSION_NUMBER);
 
+void
+_do(dbh, statement)
+    SV *dbh
+    SV *statement
+    CODE:
+    {
+        D_imp_dbh(dbh);
+        IV retval;
+        retval = sqlite_db_do_sv(dbh, imp_dbh, statement);
+        /* remember that dbd_db_do_sv must return <= -2 for error     */
+        if (retval == 0)            /* ok with no rows affected     */
+            XST_mPV(0, "0E0");      /* (true but zero)              */
+        else if (retval < -1)       /* -1 == unknown number of rows */
+            XST_mUNDEF(0);          /* <= -2 means error            */
+        else
+            XST_mIV(0, retval);     /* typically 1, rowcount or -1  */
+    }
+
 IV
 last_insert_rowid(dbh)
     SV *dbh
@@ -586,7 +604,7 @@ SAVEPOINT()
 #if SQLITE_VERSION_NUMBER >= 3006011
         RETVAL = SQLITE_SAVEPOINT;
 #else
-		RETVAL = -1;
+        RETVAL = -1;
 #endif
     OUTPUT:
         RETVAL
@@ -622,28 +640,44 @@ OPEN_NOMUTEX()
 static int
 OPEN_FULLMUTEX()
     CODE:
+#if SQLITE_VERSION_NUMBER >= 3006006
         RETVAL = SQLITE_OPEN_FULLMUTEX;
+#else
+        RETVAL = -1;
+#endif
     OUTPUT:
         RETVAL
 
 static int
 OPEN_SHAREDCACHE()
     CODE:
+#if SQLITE_VERSION_NUMBER >= 3006018
         RETVAL = SQLITE_OPEN_SHAREDCACHE;
+#else
+        RETVAL = -1;
+#endif
     OUTPUT:
         RETVAL
 
 static int
 OPEN_PRIVATECACHE()
     CODE:
+#if SQLITE_VERSION_NUMBER >= 3006018
         RETVAL = SQLITE_OPEN_PRIVATECACHE;
+#else
+        RETVAL = -1;
+#endif
     OUTPUT:
         RETVAL
 
 static int
 OPEN_URI()
     CODE:
+#if SQLITE_VERSION_NUMBER >= 3007007
         RETVAL = SQLITE_OPEN_URI;
+#else
+        RETVAL = -1;
+#endif
     OUTPUT:
         RETVAL
 
