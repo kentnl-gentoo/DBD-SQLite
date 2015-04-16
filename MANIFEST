@@ -1,11 +1,13 @@
 .travis.yml
 Changes
+constants.inc
 dbdimp.c
 dbdimp.h
 fts3_tokenizer.h
 inc/Test/NoWarnings.pm
 inc/Test/NoWarnings/Warning.pm
 lib/DBD/SQLite.pm
+lib/DBD/SQLite/Constants.pm
 lib/DBD/SQLite/Cookbook.pod
 lib/DBD/SQLite/Fulltext_search.pod
 lib/DBD/SQLite/VirtualTable.pm
@@ -49,7 +51,6 @@ t/25_chopblanks.t
 t/26_commit.t
 t/27_metadata.t
 t/28_schemachange.t
-t/29_cppcomments.t
 t/30_auto_rollback.t
 t/31_bind_weird_number_param.t
 t/32_inactive_error.t
@@ -79,6 +80,7 @@ t/55_statistics_info.t
 t/56_open_flags.t
 t/57_uri_filename.t
 t/58_see_if_its_a_number_and_explicit_binding.t
+t/59_extended_result_codes.t
 t/cookbook_variance.t
 t/lib/Test.pm
 t/rt_15186_prepcached.t
@@ -123,7 +125,7 @@ t/virtual_table/20_perldata.t
 t/virtual_table/21_perldata_charinfo.t
 t/virtual_table/rt_99748.t
 typemap
-util/getsqlite.pl
+xt/cpp_comments.t
 xt/meta.t
 xt/pmv.t
 xt/pod.t

@@ -44,6 +44,7 @@ struct imp_dbh_st {
     bool allow_multiple_statements;
     bool use_immediate_transaction;
     bool see_if_its_a_number;
+    int extended_result_codes;
     stmt_list_s * stmt_list;
 };
 
@@ -94,14 +95,14 @@ struct aggrInfo {
 };
 
 
-int sqlite_db_create_function(pTHX_ SV *dbh, const char *name, int argc, SV *func);
+int sqlite_db_create_function(pTHX_ SV *dbh, const char *name, int argc, SV *func, int flags);
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 int sqlite_db_enable_load_extension(pTHX_ SV *dbh, int onoff);
 int sqlite_db_load_extension(pTHX_ SV *dbh, const char *file, const char *proc);
 #endif
 
-int sqlite_db_create_aggregate(pTHX_ SV *dbh, const char *name, int argc, SV *aggr );
+int sqlite_db_create_aggregate(pTHX_ SV *dbh, const char *name, int argc, SV *aggr, int flags );
 int sqlite_db_create_collation(pTHX_ SV *dbh, const char *name, SV *func);
 int sqlite_db_progress_handler(pTHX_ SV *dbh, int n_opcodes, SV *handler);
 int sqlite_bind_col( SV *sth, imp_sth_t *imp_sth, SV *col, SV *ref, IV sql_type, SV *attribs );
