@@ -6,8 +6,16 @@ BEGIN {
 	$^W = 1;
 }
 
-use t::lib::Test qw/connect_ok @CALL_FUNCS/;
+use DBD::SQLite;
 use Test::More;
+
+BEGIN {
+	if (!grep /^ENABLE_COLUMN_METADATA/, DBD::SQLite::compile_options()) {
+		plan skip_all => "Column metadata is disabled for this DBD::SQLite";
+	}
+}
+
+use t::lib::Test qw/connect_ok @CALL_FUNCS/;
 use Test::NoWarnings;
 
 plan tests => 16 * @CALL_FUNCS + 1;
