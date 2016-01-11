@@ -414,9 +414,18 @@ sqlite_db_login6(SV *dbh, imp_dbh_t *imp_dbh, char *dbname, char *user, char *pa
             val = hv_fetch(hv, "sqlite_extended_result_codes", 28, 0);
             extended = (val && SvOK(*val)) ? !(!SvTRUE(*val)) : 0;
         }
+        if (hv_exists(hv, "ReadOnly", 8)) {
+            val = hv_fetch(hv, "ReadOnly", 8, 0);
+            if ((val && SvOK(*val)) ? SvIV(*val) : 0) {
+                flag |= SQLITE_OPEN_READONLY;
+            }
+        }
         if (hv_exists(hv, "sqlite_open_flags", 17)) {
             val = hv_fetch(hv, "sqlite_open_flags", 17, 0);
-            flag = (val && SvOK(*val)) ? SvIV(*val) : 0;
+            flag |= (val && SvOK(*val)) ? SvIV(*val) : 0;
+            if (flag & SQLITE_OPEN_READONLY) {
+                hv_stores(hv, "ReadOnly", newSViv(1));
+            }
         }
     }
     rc = sqlite_open2(dbname, &(imp_dbh->db), flag, extended);
@@ -694,6 +703,14 @@ sqlite_db_STORE_attrib(SV *dbh, imp_dbh_t *imp_dbh, SV *keysv, SV *valuesv)
         DBIc_set(imp_dbh, DBIcf_AutoCommit, SvTRUE(valuesv));
         return TRUE;
     }
+#if SQLITE_VERSION_NUMBER >= 3007011
+    if (strEQ(key, "ReadOnly")) {
+        if (SvTRUE(valuesv) && !sqlite3_db_readonly(imp_dbh->db, "main")) {
+            sqlite_error(dbh, 0, "ReadOnly is set but it's only advisory");
+        }
+        return FALSE;
+    }
+#endif
     if (strEQ(key, "sqlite_allow_multiple_statements")) {
         imp_dbh->allow_multiple_statements = !(! SvTRUE(valuesv));
         return TRUE;
@@ -3087,6 +3104,14 @@ _constraint_op_to_string(unsigned char op) {
         return "<=";
     case SQLITE_INDEX_CONSTRAINT_MATCH:
         return "MATCH";
+#if SQLITE_VERSION_NUMBER >= 3010000
+    case SQLITE_INDEX_CONSTRAINT_LIKE:
+        return "LIKE";
+    case SQLITE_INDEX_CONSTRAINT_GLOB:
+        return "GLOB";
+    case SQLITE_INDEX_CONSTRAINT_REGEXP:
+        return "REGEXP";
+#endif
     default:
         return "unknown";
     }

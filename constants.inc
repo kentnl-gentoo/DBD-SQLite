@@ -103,6 +103,15 @@ _const_authorizer_return_codes()
     OUTPUT:
         RETVAL
 
+IV
+_const_compile_time_library_version_numbers()
+    ALIAS:
+        SQLITE_VERSION_NUMBER = SQLITE_VERSION_NUMBER
+    CODE:
+        RETVAL = ix;
+    OUTPUT:
+        RETVAL
+
 #if SQLITE_VERSION_NUMBER >= 3006002
 
 IV
@@ -561,10 +570,10 @@ _const_extended_result_codes_3008007_zero()
 
 #endif
 
-#if SQLITE_VERSION_NUMBER >= 3090000
+#if SQLITE_VERSION_NUMBER >= 3009000
 
 IV
-_const_extended_result_codes_3090000()
+_const_extended_result_codes_3009000()
     ALIAS:
         SQLITE_IOERR_VNODE = SQLITE_IOERR_VNODE
     CODE:
@@ -575,9 +584,33 @@ _const_extended_result_codes_3090000()
 #else
 
 IV
-_const_extended_result_codes_3090000_zero()
+_const_extended_result_codes_3009000_zero()
     ALIAS:
         SQLITE_IOERR_VNODE = 1
+    CODE:
+        RETVAL = 0;
+    OUTPUT:
+        RETVAL
+
+#endif
+
+#if SQLITE_VERSION_NUMBER >= 3010000
+
+IV
+_const_extended_result_codes_3010000()
+    ALIAS:
+        SQLITE_IOERR_AUTH = SQLITE_IOERR_AUTH
+    CODE:
+        RETVAL = ix;
+    OUTPUT:
+        RETVAL
+
+#else
+
+IV
+_const_extended_result_codes_3010000_zero()
+    ALIAS:
+        SQLITE_IOERR_AUTH = 1
     CODE:
         RETVAL = 0;
     OUTPUT:
@@ -787,30 +820,6 @@ _const_result_codes_3007017_zero()
     ALIAS:
         SQLITE_NOTICE = 1
         SQLITE_WARNING = 2
-    CODE:
-        RETVAL = 0;
-    OUTPUT:
-        RETVAL
-
-#endif
-
-#if SQLITE_VERSION_NUMBER >= 3090000
-
-IV
-_const_virtual_table_scan_flags_3090000()
-    ALIAS:
-        SQLITE_INDEX_SCAN_UNIQUE = SQLITE_INDEX_SCAN_UNIQUE
-    CODE:
-        RETVAL = ix;
-    OUTPUT:
-        RETVAL
-
-#else
-
-IV
-_const_virtual_table_scan_flags_3090000_zero()
-    ALIAS:
-        SQLITE_INDEX_SCAN_UNIQUE = 1
     CODE:
         RETVAL = 0;
     OUTPUT:
