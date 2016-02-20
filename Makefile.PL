@@ -227,8 +227,14 @@ my @CC_DEFINE = (
 	'-DSQLITE_ENABLE_STAT3',            # for sqlite >= 3.7.9
 	'-DSQLITE_ENABLE_STAT4',            # for sqlite >= 3.8.3.1
 	'-DSQLITE_ENABLE_JSON1',            # for sqlite >= 3.9.0
+	'-DSQLITE_ENABLE_FTS5',             # for sqlite >= 3.9.0
 	'-DNDEBUG=1',
 );
+
+# for upstream security concern, this should be set only if requested
+if ($ENV{SQLITE_ENABLE_FTS3_TOKENIZER}) {
+	push @CC_DEFINE, '-DSQLITE_ENABLE_FTS3_TOKENIZER'; # for sqlite >= 3.11.0
+}
 
 if (DEVELOPER_ONLY) {
 	# for sqlite >= 3.8.8

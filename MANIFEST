@@ -3,6 +3,8 @@ Changes
 constants.inc
 dbdimp.c
 dbdimp.h
+dbdimp_tokenizer.inc
+dbdimp_virtual_table.inc
 fts3_tokenizer.h
 inc/Test/NoWarnings.pm
 inc/Test/NoWarnings/Warning.pm
@@ -83,6 +85,7 @@ t/58_see_if_its_a_number_and_explicit_binding.t
 t/59_extended_result_codes.t
 t/60_readonly.t
 t/61_strlike.t
+t/62_regexp_multibyte_char_class.t
 t/cookbook_variance.t
 t/lib/Test.pm
 t/rt_106151_outermost_savepoint.t
