@@ -5,7 +5,7 @@ use strict;
 use DBI   1.57 ();
 use DynaLoader ();
 
-our $VERSION = '1.54';
+our $VERSION = '1.55_01';
 our @ISA     = 'DynaLoader';
 
 # sqlite_version cache (set in the XS bootstrap)
@@ -977,7 +977,7 @@ are limited by the typeless nature of the SQLite database.
 =head1 SQLITE VERSION
 
 DBD::SQLite is usually compiled with a bundled SQLite library
-(SQLite version S<3.13.0> as of this release) for consistency.
+(SQLite version S<3.16.0> as of this release) for consistency.
 However, a different version of SQLite may sometimes be used for
 some reasons like security, or some new experimental features.
 
