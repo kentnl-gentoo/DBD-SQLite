@@ -1,4 +1,4 @@
-package t::lib::Test;
+package SQLiteTest;
 
 # Support code for DBD::SQLite tests
 
@@ -7,7 +7,6 @@ use Exporter   ();
 use File::Spec ();
 use Test::More ();
 
-our $VERSION = '1.55_03';
 our @ISA     = 'Exporter';
 our @EXPORT  = qw/connect_ok dies dbfile @CALL_FUNCS $sqlite_call has_sqlite requires_sqlite/;
 our @CALL_FUNCS;

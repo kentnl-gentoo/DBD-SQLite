@@ -642,7 +642,7 @@ sqlite_db_disconnect(SV *dbh, imp_dbh_t *imp_dbh)
     sqlite_trace( dbh, imp_dbh, 1, form("rc = %d", rc) );
     if ( SQLITE_BUSY == rc ) { /* We have unfinalized statements */
         /* Only close the statements that were prepared by this module */
-        while ( s = imp_dbh->stmt_list ) {
+        while ( (s = imp_dbh->stmt_list) ) {
             sqlite_trace( dbh, imp_dbh, 1, form("Finalizing statement (%p)", s->stmt) );
             sqlite3_finalize( s->stmt );
             imp_dbh->stmt_list = s->prev;
@@ -657,7 +657,7 @@ sqlite_db_disconnect(SV *dbh, imp_dbh_t *imp_dbh)
     }
     /* The list should be empty at this point, but if for some unforseen reason
        it isn't, free remaining nodes here */
-    while( s = imp_dbh->stmt_list ) {
+    while( (s = imp_dbh->stmt_list) ) {
         imp_dbh->stmt_list = s->prev;
         sqlite3_free( s );
     }
@@ -871,7 +871,7 @@ sqlite_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *sv_statement, SV *attribs)
         }
         return FALSE; /* -> undef in lib/DBD/SQLite.pm */
     }
-    if (&extra && imp_dbh->allow_multiple_statements) {
+    if (imp_dbh->allow_multiple_statements) {
         imp_sth->unprepared_statements = savepv(extra);
     }
     else {
@@ -1176,7 +1176,8 @@ sqlite_st_fetch(SV *sth, imp_sth_t *imp_sth)
             case SQLITE_BLOB:
                 sqlite_trace(sth, imp_sth, 5, form("fetch column %d as blob", i));
                 len = sqlite3_column_bytes(imp_sth->stmt, i);
-                sv_setpvn(AvARRAY(av)[i], sqlite3_column_blob(imp_sth->stmt, i), len);
+                val = (char*)sqlite3_column_blob(imp_sth->stmt, i);
+                sv_setpvn(AvARRAY(av)[i], len ? val : "", len);
                 SvUTF8_off(AvARRAY(av)[i]);
                 break;
             default:

@@ -5,7 +5,7 @@ use strict;
 use DBI   1.57 ();
 use DynaLoader ();
 
-our $VERSION = '1.55_03';
+our $VERSION = '1.55_04';
 our @ISA     = 'DynaLoader';
 
 # sqlite_version cache (set in the XS bootstrap)
@@ -672,7 +672,7 @@ sub statistics_info {
         my $tables = $dbh->selectall_arrayref("SELECT name FROM $master_table WHERE type = ?", undef, "table") or return;
         for my $table_ref (@$tables) {
             my $tbname = $table_ref->[0];
-            next if defined $table && $table ne '%' && $table ne $tbname;
+            next if defined $table && $table ne '%' && uc($table) ne uc($tbname);
 
             my $quoted_tbname = $dbh->quote_identifier($tbname);
             my $sth = $dbh->prepare("PRAGMA $quoted_dbname.index_list($quoted_tbname)") or return;
@@ -977,7 +977,7 @@ are limited by the typeless nature of the SQLite database.
 =head1 SQLITE VERSION
 
 DBD::SQLite is usually compiled with a bundled SQLite library
-(SQLite version S<3.17.0> as of this release) for consistency.
+(SQLite version S<3.21.0> as of this release) for consistency.
 However, a different version of SQLite may sometimes be used for
 some reasons like security, or some new experimental features.
 
@@ -1364,7 +1364,7 @@ a C<BEGIN> statement (only when an actual transaction has not
 begun yet) but you're not allowed to call C<begin_work> method
 (if you don't issue a C<BEGIN>, it will be issued internally).
 You can commit or roll it back freely. Another transaction will
-automatically begins if you execute another statement.
+automatically begin if you execute another statement.
 
   $dbh->{AutoCommit} = 0;
   
@@ -1552,6 +1552,11 @@ set this to false explicitly.
 If you set this to true, DBD::SQLite tries to see if the bind values
 are number or not, and does not quote if they are numbers. See above
 for details.
+
+=item sqlite_extended_result_codes
+
+If set to true, DBD::SQLite uses extended result codes where appropriate
+(see L<http://www.sqlite.org/rescode.html>).
 
 =back
 
